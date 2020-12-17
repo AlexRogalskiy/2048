@@ -32,8 +32,8 @@ GameManager.prototype.isGameTerminated = function () {
 };
 
 // Set up the game
-GameManager.prototype.setup = function () {
-  var previousState = this.storageManager.getGameState();
+GameManager.prototype.setup = async function () {
+  var previousState = await this.storageManager.getGameState();
 
   // Reload the game from a previous game if present
   if (previousState) {
@@ -55,7 +55,7 @@ GameManager.prototype.setup = function () {
   }
 
   // Update the actuator
-  this.actuate();
+  await this.actuate();
 };
 
 // Set up the initial tiles to start the game with
@@ -76,8 +76,9 @@ GameManager.prototype.addRandomTile = function () {
 };
 
 // Sends the updated grid to the actuator
-GameManager.prototype.actuate = function () {
-  if (this.storageManager.getBestScore() < this.score) {
+GameManager.prototype.actuate = async function () {
+  let bestScore = await this.storageManager.getBestScore()
+  if (bestScore < this.score) {
     this.storageManager.setBestScore(this.score);
   }
 
@@ -92,7 +93,7 @@ GameManager.prototype.actuate = function () {
     score:      this.score,
     over:       this.over,
     won:        this.won,
-    bestScore:  this.storageManager.getBestScore(),
+    bestScore:  bestScore,
     terminated: this.isGameTerminated()
   });
 
@@ -127,7 +128,7 @@ GameManager.prototype.moveTile = function (tile, cell) {
 };
 
 // Move tiles on the grid in the specified direction
-GameManager.prototype.move = function (direction) {
+GameManager.prototype.move = async function (direction) {
   // 0: up, 1: right, 2: down, 3: left
   var self = this;
 
@@ -186,7 +187,7 @@ GameManager.prototype.move = function (direction) {
       this.over = true; // Game over!
     }
 
-    this.actuate();
+    await this.actuate();
   }
 };
 

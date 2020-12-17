@@ -1,4 +1,11 @@
-# 2048
+# 2048 on Deta
+This is a POC fork of the original game which saves the game state in a remote DB (Deta Base) – useful for cross-device games.
+
+1. Get a free [Deta](https://www.deta.sh/) account
+2. Clone, cd into the repo & run `deta new`
+
+## 2048 game
+
 A small clone of [1024](https://play.google.com/store/apps/details?id=com.veewo.a1024), based on [Saming's 2048](http://saming.fr/p/2048/) (also a clone).
 
 Made just for fun. [Play it here!](http://gabrielecirulli.github.io/2048/)

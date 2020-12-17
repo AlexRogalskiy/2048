@@ -1,8 +1,6 @@
 window.fakeStorage = {
-  _data: {},
-
   setItem: function (id, val) {
-    return this._data[id] = String(val);
+    console.log("", id, val)
   },
 
   getItem: function (id) {
@@ -17,6 +15,7 @@ window.fakeStorage = {
     return this._data = {};
   }
 };
+
 
 function LocalStorageManager() {
   this.bestScoreKey     = "bestScore";
@@ -40,24 +39,40 @@ LocalStorageManager.prototype.localStorageSupported = function () {
 };
 
 // Best score getters/setters
-LocalStorageManager.prototype.getBestScore = function () {
-  return this.storage.getItem(this.bestScoreKey) || 0;
+LocalStorageManager.prototype.getBestScore = async function () {
+  // return this.storage.getItem(this.bestScoreKey) || 0;
+  let r  = await fetch(`/api?key=${this.bestScoreKey}`)
+  let stateJSON = await r.json()
+  // console.log(stateJSON)
+  return stateJSON? stateJSON.value : 0;
 };
 
-LocalStorageManager.prototype.setBestScore = function (score) {
-  this.storage.setItem(this.bestScoreKey, score);
+LocalStorageManager.prototype.setBestScore = async function (score) {
+  await fetch("/api", {
+    method: "post",
+    body: JSON.stringify({key: this.bestScoreKey, value: score})
+  }).then(r => r.json())
+  // console.log("setBestScore", this.bestScoreKey, score);
 };
 
 // Game state getters/setters and clearing
-LocalStorageManager.prototype.getGameState = function () {
-  var stateJSON = this.storage.getItem(this.gameStateKey);
-  return stateJSON ? JSON.parse(stateJSON) : null;
+LocalStorageManager.prototype.getGameState = async function () {
+  // var stateJSON = this.storage.getItem(this.gameStateKey);
+  let r  = await fetch(`/api?key=${this.gameStateKey}`)
+  let stateJSON = await r.json()
+  // console.log(stateJSON)
+  return stateJSON? stateJSON.value : null;
 };
 
 LocalStorageManager.prototype.setGameState = function (gameState) {
-  this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
+  fetch("/api", {
+    method: "post",
+    body: JSON.stringify({key: this.gameStateKey, value: gameState})
+  }).then(r => r.json())
+  // console.log("setGameState", this.gameStateKey, gameState);
+  // this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
 };
 
 LocalStorageManager.prototype.clearGameState = function () {
-  this.storage.removeItem(this.gameStateKey);
+  fetch(`/api?key=${this.gameStateKey}`, {method: "delete"})
 };
